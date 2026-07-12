@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --medical-primary: #1D9E75;
+    --medical-primary-dark: #0F6E56;
+    --medical-primary-light: #E1F5EE;
+  }
+
+  * {
+    @apply border-gray-800;
+  }
+
+  body {
+    @apply bg-gray-950 text-gray-100;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-gray-700 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-gray-600; }
+}
+
+@layer components {
+  .card {
+    @apply bg-gray-900 border border-gray-800 rounded-xl p-5;
+  }
+
+  .card-sm {
+    @apply bg-gray-900 border border-gray-800 rounded-lg p-4;
+  }
+
+  .btn-medical {
+    @apply bg-medical-400 hover:bg-medical-500 text-white font-medium px-4 py-2 rounded-lg
+           transition-all duration-150 flex items-center gap-2 text-sm disabled:opacity-50
+           disabled:cursor-not-allowed;
+  }
+
+  .btn-outline {
+    @apply border border-gray-700 hover:border-gray-600 bg-gray-900 hover:bg-gray-800
+           text-gray-300 font-medium px-4 py-2 rounded-lg transition-all duration-150
+           flex items-center gap-2 text-sm;
+  }
+
+  .btn-danger {
+    @apply bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-lg
+           transition-all duration-150 flex items-center gap-2 text-sm;
+  }
+
+  .form-input {
+    @apply w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm
+           text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-1
+           focus:ring-medical-400 focus:border-medical-400 transition-colors;
+  }
+
+  .form-label {
+    @apply block text-xs font-medium text-gray-400 mb-1.5;
+  }
+
+  .badge-risk-low    { @apply bg-green-900/50 text-green-400 border border-green-800; }
+  .badge-risk-mod    { @apply bg-yellow-900/50 text-yellow-400 border border-yellow-800; }
+  .badge-risk-high   { @apply bg-orange-900/50 text-orange-400 border border-orange-800; }
+  .badge-risk-vhigh  { @apply bg-red-900/50 text-red-400 border border-red-800; }
+
+  .ai-output {
+    @apply prose prose-invert prose-sm max-w-none
+           prose-headings:text-gray-100 prose-headings:font-medium
+           prose-p:text-gray-300 prose-p:leading-relaxed
+           prose-strong:text-gray-100
+           prose-li:text-gray-300
+           prose-a:text-medical-400;
+  }
+
+  .tab-active {
+    @apply text-medical-400 border-b-2 border-medical-400 font-medium;
+  }
+
+  .tab-inactive {
+    @apply text-gray-500 hover:text-gray-300 border-b-2 border-transparent transition-colors;
+  }
+
+  .metric-card {
+    @apply card-sm flex flex-col gap-1;
+  }
+
+  .alert-info    { @apply bg-blue-900/20 border border-blue-800 text-blue-300 rounded-lg p-3 text-sm flex gap-2; }
+  .alert-warn    { @apply bg-yellow-900/20 border border-yellow-800 text-yellow-300 rounded-lg p-3 text-sm flex gap-2; }
+  .alert-danger  { @apply bg-red-900/20 border border-red-800 text-red-300 rounded-lg p-3 text-sm flex gap-2; }
+  .alert-success { @apply bg-green-900/20 border border-green-800 text-green-300 rounded-lg p-3 text-sm flex gap-2; }
+}
+
+/* Typing animation */
+@keyframes typing-dot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-6px); opacity: 1; }
+}
+
+.typing-dot {
+  animation: typing-dot 1.2s ease-in-out infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* AI output HTML styling within dark theme */
+.ai-html-output h1, .ai-html-output h2, .ai-html-output h3 {
+  @apply text-gray-100 font-semibold mt-4 mb-2;
+}
+.ai-html-output h2 { font-size: 1rem; }
+.ai-html-output h3 { font-size: 0.875rem; }
+.ai-html-output p  { @apply text-gray-300 text-sm leading-relaxed mb-2; }
+.ai-html-output ul { @apply list-disc pl-5 text-sm text-gray-300 space-y-1 mb-3; }
+.ai-html-output ol { @apply list-decimal pl-5 text-sm text-gray-300 space-y-1 mb-3; }
+.ai-html-output strong { @apply text-gray-100; }
+.ai-html-output table { @apply w-full text-sm border-collapse mb-3; }
+.ai-html-output th { @apply text-left text-xs text-gray-400 pb-1 border-b border-gray-700 pr-4; }
+.ai-html-output td { @apply text-gray-300 py-1.5 pr-4 border-b border-gray-800; }
+.ai-html-output .alert-warn   { @apply bg-yellow-900/20 border border-yellow-800 text-yellow-300 rounded-lg p-3 text-sm mb-3; }
+.ai-html-output .alert-info   { @apply bg-blue-900/20 border border-blue-800 text-blue-300 rounded-lg p-3 text-sm mb-3; }
+.ai-html-output .alert-danger { @apply bg-red-900/20 border border-red-800 text-red-300 rounded-lg p-3 text-sm mb-3; }
+.ai-html-output .alert-success{ @apply bg-green-900/20 border border-green-800 text-green-300 rounded-lg p-3 text-sm mb-3; }
+.ai-html-output .badge-red    { @apply bg-red-900/40 text-red-300 text-xs px-2 py-0.5 rounded-full; }
+.ai-html-output .badge-amber  { @apply bg-yellow-900/40 text-yellow-300 text-xs px-2 py-0.5 rounded-full; }
+.ai-html-output .badge-green  { @apply bg-green-900/40 text-green-300 text-xs px-2 py-0.5 rounded-full; }
+.ai-html-output .badge-blue   { @apply bg-blue-900/40 text-blue-300 text-xs px-2 py-0.5 rounded-full; }

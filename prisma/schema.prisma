@@ -1,0 +1,251 @@
+// prisma/schema.prisma — CCA Intelligence Platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          UserRole  @default(PATIENT)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts   Account[]
+  sessions   Session[]
+  patient    Patient?
+  auditLogs  AuditLog[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Patient {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assessments CCAAssessment[]
+  labResults  LabResult[]
+  reports     MedicalReport[]
+  chatSessions ChatSession[]
+  followUps   FollowUp[]
+  timelineEvents TimelineEvent[]
+}
+
+model CCAAssessment {
+  id        String   @id @default(cuid())
+  patientId String
+  createdAt DateTime @default(now())
+
+  // Demographics
+  age       Int?
+  sex       String?
+  weightKg  Float?
+  heightCm  Float?
+  bmi       Float?
+  country   String?
+  ethnicity String?
+
+  // Lifestyle
+  smokingStatus     String?
+  smokingYears      Int?
+  cigarettesPerDay  Int?
+  alcoholUnitsWeek  Float?
+  physicalActivity  String?
+  sedentaryHoursDay Float?
+  sleepHours        Float?
+  sleepQuality      String?
+  stressLevel       Int?    // 1–10
+
+  // Dietary (scores)
+  vegetableServings  Float?
+  fruitServings      Float?
+  waterLitresDay     Float?
+  sugaryDrinksDay    Float?
+  fastFoodPerWeek    Int?
+  processedFoodScore Int?
+  redMeatPerWeek     Int?
+  friedFoodPerWeek   Int?
+  fiberAdequate      Boolean?
+  saltIntake         String?
+  cookingOilType     String?
+  mealTimingRegular  Boolean?
+  lateNightEating    Boolean?
+  dietScore          Float?
+
+  // Medical history (booleans)
+  liverDisease          Boolean?
+  hepatitisB            Boolean?
+  hepatitisC            Boolean?
+  primarySclerosingCholangitis Boolean?
+  gallstones            Boolean?
+  liverFlukeExposure    Boolean?
+  diabetes              Boolean?
+  obesity               Boolean?
+  fattyLiver            Boolean?
+  familyHistoryLiverCancer    Boolean?
+  familyHistoryBileDuctCancer Boolean?
+  previousBiliaryDisorders    Boolean?
+
+  // Symptoms (0=none, 1=mild, 2=moderate, 3=severe)
+  jaundice       Int?
+  abdominalPain  Int?
+  weightLoss     Int?
+  fatigue        Int?
+  pruritus       Int?
+  darkUrine      Int?
+  paleStools     Int?
+  fever          Int?
+  nausea         Int?
+  lossOfAppetite Int?
+
+  // Computed scores
+  riskScore         Float?
+  riskCategory      RiskCategory?
+  lifestyleScore    Float?
+  dietScore_        Float?   @map("diet_score_computed")
+  liverHealthScore  Float?
+  symptomScore      Float?
+  preventionScore   Float?
+  overallWellness   Float?
+
+  // AI output
+  aiAnalysis        String?  @db.Text
+  recommendations   Json?
+  contributingFactors Json?
+  protectiveFactors   Json?
+
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+model LabResult {
+  id         String   @id @default(cuid())
+  patientId  String
+  testedAt   DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  // CCA-relevant biomarkers
+  bilirubinTotal  Float?
+  bilirubinDirect Float?
+  alp             Float?
+  ast             Float?
+  alt             Float?
+  ggt             Float?
+  ca199           Float?
+  albumin         Float?
+  inr             Float?
+  platelets       Float?
+  wbc             Float?
+  creatinine      Float?
+
+  aiInterpretation String? @db.Text
+  flags            Json?   // array of flagged abnormals
+
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+model MedicalReport {
+  id           String       @id @default(cuid())
+  patientId    String
+  reportType   ReportType
+  originalName String
+  fileUrl      String?
+  textContent  String?      @db.Text
+  aiSummary    String?      @db.Text
+  findings     Json?
+  createdAt    DateTime     @default(now())
+
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+model ChatSession {
+  id        String   @id @default(cuid())
+  patientId String
+  title     String?
+  messages  Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+model FollowUp {
+  id          String         @id @default(cuid())
+  patientId   String
+  title       String
+  description String?        @db.Text
+  dueDate     DateTime
+  completedAt DateTime?
+  priority    Priority       @default(MEDIUM)
+  status      FollowUpStatus @default(PENDING)
+  type        FollowUpType
+  createdAt   DateTime       @default(now())
+
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+model TimelineEvent {
+  id          String   @id @default(cuid())
+  patientId   String
+  eventType   String
+  title       String
+  description String?  @db.Text
+  eventDate   DateTime
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String
+  action     String
+  resource   String
+  resourceId String?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+enum UserRole     { PATIENT DOCTOR NURSE ADMIN }
+enum RiskCategory { SAFE LOW MODERATE HIGH VERY_HIGH }
+enum ReportType   { ULTRASOUND CT_SCAN MRI MRCP LAB_REPORT CLINICAL_NOTES DISCHARGE OTHER }
+enum Priority     { LOW MEDIUM HIGH URGENT }
+enum FollowUpStatus { PENDING IN_PROGRESS COMPLETED CANCELLED OVERDUE }
+enum FollowUpType   { LAB_TEST IMAGING CONSULTATION BIOPSY MEDICATION LIFESTYLE OTHER }
