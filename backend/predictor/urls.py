@@ -8,6 +8,7 @@ app_name = "predictor"
 
 urlpatterns = [
     path("health/", views.health_check, name="health"),
+    path("symptoms/", views.SymptomsView.as_view(), name="symptoms"),
     path("chat/", views.ChatView.as_view(), name="chat"),
     path("prediction/", views.PredictionView.as_view(), name="prediction"),
     path("gemini/", views.GeminiView.as_view(), name="gemini"),

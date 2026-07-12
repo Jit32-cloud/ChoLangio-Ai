@@ -8,11 +8,16 @@ from rest_framework.views import APIView
 
 from .serializers import (
     ChatRequestSerializer,
+    DoctorRequestSerializer,
+    EducationRequestSerializer,
+    FollowupRequestSerializer,
+    HealthPlanRequestSerializer,
     ImagingRequestSerializer,
     LabRequestSerializer,
     PredictionRequestSerializer,
     ReportRequestSerializer,
     RiskRequestSerializer,
+    SymptomsRequestSerializer,
 )
 from .services import (
     ChatService,
@@ -26,6 +31,7 @@ from .services import (
     PredictionService,
     ReportService,
     RiskService,
+    SymptomsService,
 )
 
 @api_view(["GET"])
@@ -54,6 +60,11 @@ class _PlaceholderServiceView(APIView):
     def get(self, request: Request) -> Response:
         service = self.service_class()
         return Response(service.process(), status=status.HTTP_200_OK)
+
+
+class SymptomsView(_PlaceholderServiceView):
+    service_class = SymptomsService
+    request_serializer_class = SymptomsRequestSerializer
 
 
 class ChatView(_PlaceholderServiceView):
@@ -87,18 +98,22 @@ class ImagingView(_PlaceholderServiceView):
 
 class EducationView(_PlaceholderServiceView):
     service_class = EducationService
+    request_serializer_class = EducationRequestSerializer
 
 
 class DoctorView(_PlaceholderServiceView):
     service_class = DoctorService
+    request_serializer_class = DoctorRequestSerializer
 
 
 class HealthPlanView(_PlaceholderServiceView):
     service_class = HealthPlanService
+    request_serializer_class = HealthPlanRequestSerializer
 
 
 class FollowupView(_PlaceholderServiceView):
     service_class = FollowupService
+    request_serializer_class = FollowupRequestSerializer
 
 
 class RiskView(_PlaceholderServiceView):

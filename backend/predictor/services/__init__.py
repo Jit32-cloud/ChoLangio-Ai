@@ -11,6 +11,7 @@ from .lab_service import LabService
 from .prediction_service import PredictionService
 from .report_service import ReportService
 from .risk_service import RiskService
+from .symptoms_service import SymptomsService
 
 __all__ = [
     "ChatService",
@@ -24,4 +25,5 @@ __all__ = [
     "PredictionService",
     "ReportService",
     "RiskService",
+    "SymptomsService",
 ]
