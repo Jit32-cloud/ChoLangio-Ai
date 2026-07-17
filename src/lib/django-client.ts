@@ -18,6 +18,7 @@ export interface DjangoPlaceholder {
   status: string
   service?: string
   app?: string
+  analysis: string
 }
 
 export function placeholderText(django: DjangoPlaceholder): string {
