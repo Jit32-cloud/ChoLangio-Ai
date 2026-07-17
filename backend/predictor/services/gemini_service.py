@@ -1,11 +1,24 @@
-"""Placeholder service for Gemini AI integration."""
+import os
 
-from predictor.utils.helpers import build_ready_response
+from google import genai
 
 
 class GeminiService:
-    """Handles Gemini API calls. Logic to be implemented."""
+    """Handles Gemini API calls."""
 
-    def process(self, data: dict | None = None) -> dict:
-        """Process a Gemini request. Returns a placeholder response."""
-        return build_ready_response(service="gemini")
+    def __init__(self):
+        api_key = os.getenv("GEMINI_API_KEY")
+
+        if not api_key:
+            raise ValueError("GEMINI_API_KEY is not configured.")
+
+        self.client = genai.Client(api_key=api_key)
+        self.model = os.getenv("AI_MODEL", "gemini-2.5-flash")
+
+    def generate(self, prompt: str) -> str:
+        response = self.client.models.generate_content(
+            model=self.model,
+            contents=prompt,
+        )
+
+        return response.text

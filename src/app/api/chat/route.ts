@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     }
 
     const django = await forwardToDjango(DJANGO_PATHS.chat, { messages });
-    const text = placeholderText(django);
+    const text = django.analysis;
     const encoder = new TextEncoder();
 
     const readable = new ReadableStream({

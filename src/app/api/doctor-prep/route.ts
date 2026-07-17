@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     const django = await forwardToDjango(DJANGO_PATHS.doctor, data)
     return NextResponse.json({
       success: true,
-      preparation: placeholderText(django),
+      preparation: django.analysis,
       timestamp: new Date().toISOString(),
     })
     // Phase 4: restore Gemini
